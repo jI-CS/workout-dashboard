@@ -1,0 +1,11 @@
+#nprogress .bar {
+   background-color: orange;
+ }
+ 
+ #nprogress .peg {
+   box-shadow: 0 0 10px orange, 0 0 5px orange;
+ }
+ 
+ #nprogress .spinner-icon {
+   display: none;
+ }
