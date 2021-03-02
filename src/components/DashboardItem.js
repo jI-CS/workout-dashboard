@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
-const DashboardItem = () => {
-   return (
-      <div className="dashboard--item">
-         
-      </div>
-   )
-}
+const DashboardItem = ({ children }) => {
+   return <article className="dashboard--item">{children}</article>;
+};
 
-export default DashboardItem
+export default DashboardItem;

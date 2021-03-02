@@ -1,46 +1,30 @@
-import Sidebar from './Sidebar';
-import Dashboard from './Dashboard';
-import Login from './Login';
-import CustomRoute from './CustomRoute';
-import { Switch } from 'react-router-dom';
-const Main = () => {
+import { connect } from "react-redux";
+import { Redirect, useHistory, useLocation } from "react-router-dom";
+import Login from "./Login";
+import Alerta from "./Alerta";
+import { routeChange } from "../actions/actionCreators";
+import { useEffect } from "react";
 
+const Main = ({ children, error, user, dispatch }) => {
+   const history = useHistory();
+   useEffect(() => {
+      history.listen((location) => {
+         dispatch(routeChange());
+      });
+   }, [history])
+   
    return (
       <main>
-         <Switch>
-            <CustomRoute {...
-               {
-                  path: '/dashboard', 
-                  exact: true, 
-                  render: () => (
-                     <>
-                        <Sidebar/>
-                        <Dashboard/>
-                     </>
-                  )
-               }
-            }/>
-            <CustomRoute {...
-               {
-                  path: '/add-workout', 
-                  exact: true, 
-                  render: () => (
-                     <>
-                        <Sidebar/>
-                     </>
-                  )
-               }
-            }/>
-            <CustomRoute {...
-               {
-                  path: ['/login', '/register'],
-                  exact: true,
-                  component: Login
-               }
-            }/>
-         </Switch>
+         {!user || (error && error.response.status === 401 && <Redirect to={Login} />)}
+         {error && error.type === "NETWORK_ERROR" && (
+            <Alerta title={error.response.status} text={error.response.statusText} />
+         )}
+         {children}
+         
       </main>
-   )
-}
+   );
+};
 
-export default Main
+const mapStateToProps = ({ error, user }) => ({ error, user });
+
+export default connect(mapStateToProps)(Main);

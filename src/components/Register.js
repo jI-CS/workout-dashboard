@@ -2,15 +2,16 @@ import { Redirect } from "react-router-dom";
 import FormControl from "./FormControl";
 import { useState } from "react";
 import { connect } from "react-redux";
-import { login } from "../actions/actionCreators";
+import { register } from "../actions/actionCreators";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faKey, faUserAlt } from "@fortawesome/free-solid-svg-icons";
+import { faKey, faUserAlt, faRulerVertical } from "@fortawesome/free-solid-svg-icons";
 import CustomSpinner from "./utilities/CustomSpinner";
 
-const Login = ({ login, user, loading, error }) => {
+const Register = ({ register, user, loading, error }) => {
    const [formState, setFormState] = useState({
       username: { value: "", focus: "", valid: "", errors: [] },
       password: { value: "", focus: "", valid: "", errors: [] },
+      height: { value: "", focus: "", valid: "", errors: [] }
    });
 
    const onFocus = (field) => {
@@ -24,6 +25,14 @@ const Login = ({ login, user, loading, error }) => {
       });
    };
 
+   const onInput = (field, value) => {
+      console.log(formState);
+      setFormState({
+         ...formState,
+         [field]: { ...formState[field], value: value, valid: formState[field].value.length + 1> 0 ? "" : "invalid" },
+      });
+   };
+
    const validate = () => {
       const formKeys = Object.keys(formState);
       const reduced = formKeys.reduce((acc, curr) => {
@@ -33,18 +42,15 @@ const Login = ({ login, user, loading, error }) => {
    };
 
    const onSubmit = () => {
-      if (formState.username.value.length && formState.password.value.length)
-         login({
+      if (
+            formState.username.value.length 
+            && formState.password.value.length 
+            && formState.height.value.length)
+         register({
             username: formState.username.value,
             password: formState.password.value,
+            height: Number(formState.height.value)
          });
-   };
-
-   const handleInput = (field, value) => {
-      setFormState({
-         ...formState,
-         [field]: { ...formState[field], value: value, valid: formState[field].value.length + 1 > 0 ? "" : "invalid" },
-      });
    };
 
    if (user) {
@@ -53,7 +59,7 @@ const Login = ({ login, user, loading, error }) => {
 
    return (
       <form className="form">
-         <h2>login</h2>
+         <h2>registro</h2>
          <FormControl
             className={`form-control ${formState.username.focus} ${formState.username.valid}`}
             icon={<FontAwesomeIcon icon={faUserAlt} size="lg" />}
@@ -62,7 +68,7 @@ const Login = ({ login, user, loading, error }) => {
                type="text"
                name="username"
                placeholder="username"
-               onInput={(e) => handleInput(e.target.name, e.target.value)}
+               onInput={(e) => onInput(e.target.name, e.target.value)}
                onFocus={(e) => onFocus(e.target.name)}
                onBlur={(e) => {
                   onBlur(e.target.name);
@@ -77,7 +83,22 @@ const Login = ({ login, user, loading, error }) => {
                type="password"
                name="password"
                placeholder="password"
-               onInput={(e) => handleInput(e.target.name, e.target.value)}
+               onInput={(e) => onInput(e.target.name, e.target.value)}
+               onFocus={(e) => onFocus(e.target.name)}
+               onBlur={(e) => {
+                  onBlur(e.target.name);
+               }}
+            />
+         </FormControl>
+         <FormControl
+            className={`form-control ${formState.height.focus} ${formState.height.valid}`}
+            icon={<FontAwesomeIcon icon={faRulerVertical} size="lg" />}
+         >
+            <input
+               type="number"
+               name="height"
+               placeholder="altura en cm"
+               onInput={(e) => onInput(e.target.name, e.target.value)}
                onFocus={(e) => onFocus(e.target.name)}
                onBlur={(e) => {
                   onBlur(e.target.name);
@@ -105,9 +126,10 @@ const Login = ({ login, user, loading, error }) => {
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-   login: (user) => dispatch(login(user)),
+   register: (user) => dispatch(register(user)),
 });
 
 const mapStateToProps = ({ user, loading, error }) => ({ user, loading, error });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Register);
+
